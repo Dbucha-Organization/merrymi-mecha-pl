@@ -882,3 +882,132 @@ body {
         margin-right: auto !important;
     }
 }
+
+/* --- Էկրանի շտկումներ --- */
+
+/* 1. Թաքցնել մենյուն համակարգչի վրա */
+.menu-toggle,
+.hamburger,
+.mobile-nav-toggle {
+    display: none !important;
+}
+
+/* 2. Ցույց տալ մենյուն միայն հեռախոսի վրա */
+@media screen and (max-width: 768px) {
+
+    .menu-toggle,
+    .hamburger,
+    .mobile-nav-toggle {
+        display: block !important;
+    }
+}
+
+/* 3. Աղջիկների նկարը շարժել աջ */
+.hero-image-container,
+.image-section {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 20px;
+}
+
+/* --- Մենյուի կատարյալ շտկում --- */
+
+/* 1. Թաքցնել բոլոր տեսակի մենյուի կոճակները համակարգչի վրա */
+.menu-toggle,
+.hamburger,
+.mobile-nav-toggle,
+.nav-toggle {
+    display: none !important;
+    visibility: hidden;
+}
+
+/* 2. Շտկել սպիտակ քառակուսու խնդիրը */
+span.menu-icon,
+.hamburger-inner {
+    background: none !important;
+    /* Ջնջում է սպիտակ ֆոնը */
+}
+
+/* 3. Ցույց տալ մենյուն միայն հեռախոսի վրա (երբ էկրանը փոքր է 768px-ից) */
+@media screen and (max-width: 768px) {
+
+    .menu-toggle,
+    .hamburger,
+    .mobile-nav-toggle {
+        display: block !important;
+        visibility: visible;
+    }
+}
+
+/* 4. Նկարի դիրքը */
+.hero-image-container {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 20px;
+}
+
+/* --- Մենյուի կոճակի (Hamburger) շտկում --- */
+
+/* 1. Համակարգչի վրա ամբողջությամբ թաքցնել */
+.menu-toggle,
+.hamburger,
+.mobile-nav-toggle {
+    display: none !important;
+}
+
+/* 2. Հեռախոսի վրա (մինչև 768px) սարքել սիրուն և հեռու գծիկներով */
+@media screen and (max-width: 768px) {
+
+    .menu-toggle,
+    .hamburger {
+        display: flex !important;
+        flex-direction: column;
+        justify-content: space-between;
+        /* Սա կհեռացնի գծիկները իրարից */
+        width: 30px;
+        /* Կոճակի լայնությունը */
+        height: 20px;
+        /* Կոճակի բարձրությունը, որ գծիկները հեռու լինեն */
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+    /* Սա հենց գծիկների տեսքն է */
+    .menu-toggle span,
+    .hamburger span,
+    .line {
+        display: block;
+        width: 100%;
+        height: 3px;
+        /* Գծիկի հաստությունը */
+        background-color: #ffffff;
+        /* Գծիկի գույնը (սպիտակ) */
+        border-radius: 5px;
+    }
+}
+
+/* 1. Ստիպում ենք հղմանը լինել «թափանցիկ» դասավորության համար */
+.card-link {
+    display: contents !important;
+    /* Սա ամենակարևոր տողն է */
+    text-decoration: none !important;
+}
+
+/* 2. Ապահովում ենք, որ ամբողջ քարտը լինի սեղմվող */
+.card.card-capacity {
+    position: relative;
+    cursor: pointer;
+}
+
+/* 3. Ստեղծում ենք անտեսանելի շերտ քարտի վրա, որը կաշխատի որպես հղում */
+.card-link::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+}
