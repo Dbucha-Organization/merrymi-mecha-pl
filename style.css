@@ -1011,3 +1011,14 @@ span.menu-icon,
     bottom: 0;
     z-index: 10;
 }
+
+.nicotine-warning {
+    background-color: #000000;
+    color: #ffffff;
+    text-align: center;
+    padding: 12px 10px;
+    font-size: 14px;
+    font-weight: bold;
+    width: 100%;
+    text-transform: uppercase;
+}
