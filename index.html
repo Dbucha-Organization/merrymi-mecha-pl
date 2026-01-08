@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merrymi-Mecha-</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Slider Styles */
+        .card-capacity .card-img-container {
+            display: grid;
+            place-items: center;
+            /* Create a grid context for stacking images */
+            position: relative;
+            /* Ensure the container sizes based on content */
+        }
+
+        .slider-img {
+            grid-area: 1 / 1;
+            /* Stack images */
+            width: 100%;
+            height: auto;
+            /* Preserve existing shadow and style */
+            filter: drop-shadow(30px 20px 40px rgba(0, 255, 13, 0.5));
+            transition: transform 0.8s cubic-bezier(0.65, 0, 0.35, 1), opacity 0.8s ease;
+            will-change: transform;
+            /* Start hidden to the right */
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Active State (Visible) */
+        .slider-img.active {
+            transform: translateX(0);
+            opacity: 1;
+            z-index: 2;
+            pointer-events: auto;
+        }
+
+        /* Exiting State (Moving Left) */
+        .slider-img.exiting {
+            transform: translateX(-100%);
+            opacity: 0;
+            z-index: 1;
+        }
+
+        /* Waiting State (Ready on Right) - No transition for instant reset */
+        .slider-img.waiting {
+            transform: translateX(100%);
+            opacity: 0;
+            transition: none;
+            z-index: 0;
+        }
+
+        /* Text Transition Styles */
+        .card-capacity .card-title,
+        .card-capacity .card-value {
+            transition: opacity 0.4s ease;
+            opacity: 1;
+        }
+
+        .card-capacity .card-title.fade-out,
+        .card-capacity .card-value.fade-out {
+            opacity: 0;
+        }
+
+        /* --- ANTIGRAVITY ANIMATION --- */
+
+        /* 1. Floating Effect */
+        @keyframes float-y {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-15px) rotate(2deg);
+            }
+        }
+
+        /* 2. Pulse Glow Effect */
+        @keyframes pulse-glow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 15px rgba(57, 255, 20, 0.4));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 35px rgba(57, 255, 20, 0.8));
+            }
+        }
+
+        /* 3. Energy Wave (Pseudo-element on active image container) */
+        @keyframes energy-wave-anim {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+
+            100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        /* Apply Animations to Active Slide */
+        .slider-img.active {
+            transform: translateX(0);
+            /* Reset from slide */
+            opacity: 1;
+            z-index: 2;
+            pointer-events: auto;
+            /* Combine interactions: Float + Glow */
+            animation: float-y 4s ease-in-out infinite, pulse-glow 3s infinite alternate;
+        }
+
+        /* Container for Energy Wave */
+        .card-capacity .card-img-container::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(57, 255, 20, 0.2) 0%, transparent 70%);
+            z-index: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Trigger wave when active */
+        .card-capacity:hover .card-img-container::before {
+            animation: energy-wave-anim 2s infinite ease-out;
+        }
+
+        /* Parallax Depth: We'll add a class via JS for Parallax */
+        .parallax-layer {
+            transition: transform 0.1s linear;
+        }
+
+        /* --- HERO IMAGE ANIMATION --- */
+        @keyframes slide-in-right {
+            0% {
+                transform: translateX(100%);
+                /* Start off-screen right */
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .main-product-img {
+            animation: slide-in-right 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            /* Ensure it stays visible after animation */
+        }
+
+        /* --- FOOTER ACCORDION --- */
+        .location-accordion {
+            text-align: center;
+            padding: 10px 0;
+            color: #fff;
+            width: 100%;
+        }
+
+        .accordion-header {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 0 auto;
+            padding: 10px;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .accordion-header .arrow {
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease;
+            opacity: 0;
+            text-align: left;
+            /* List should be readable */
+        }
+
+        .accordion-content.open {
+            max-height: 500px;
+            /* Arbitrary large height */
+            opacity: 1;
+        }
+
+        .city-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px 15px;
+            padding: 20px 0;
+            font-size: 0.9rem;
+            color: #b0c4b8;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .city-list span,
+        .city-list a {
+            white-space: nowrap;
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .city-list a:hover {
+            color: #fff;
+        }
+
+        /* Rotate arrow when open */
+        .accordion-header.active .arrow {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-container">
+            <div class="logo">
+                <span class="logo-ugreen">MerryMi M-Mecha jednorazówki</span>
+                <span class="hide-mobile">16000K & 35000K<br><span class="hide-mobile"></span></span>
+            </div>
+
+            <nav class="nav-desktop">
+                <a href="https://www.dbucha.com/" class="nav-link">Strona główna</a>
+                <a href="https://www.dbucha.com/" class="nav-link">Kontakt</a>
+                <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow" class="btn-buy">Kup teraz</a>
+            </nav>
+
+            <button class="hamburger" aria-label="Menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu">
+            <a href="https://www.dbucha.com/" class="mobile-link">Strona główna</a>
+            <a href="https://www.dbucha.com/" class="mobile-link">Kontakt</a>
+            <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow" class="btn-buy-mobile">Kup teraz</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="text-green">MerryMi M-Mecha jednorazówki</span><br>
+                        <span class="text-green">16K & 35K !</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Najlepsze jednorazówki w topowych cenac <br>
+                        Szybki zakup i natychmiastowa realizacja zamówień
+                    </p>
+                </div>
+                <div class="hero-image">
+                    <div class="hero-img-wrapper">
+                        <!-- Placeholder for the main power bank image -->
+                        <img src="images/imagesphoto1.jpg.png
+                        
+                        " alt="UGREEN Nexode Power Bank Genshin Impact Edition" class="main-product-img">
+                        <!-- Decorative elements (simulated with CSS or extra divs) -->
+                        <div class="shape cube-1"></div>
+                        <div class="shape cube-2"></div>
+                    </div>
+                </div>
+            </section>
+            <div class="product-list-container">
+                <div class="list-header">
+                    <h3></h3>
+
+
+
+                    <div class="product-grid">
+                        <!-- Card 1 -->
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow"
+                            class="product-card-small animate-on-scroll animate-fade-up delay-100">
+                            <div class="small-card-img-box">
+                                <img src="images/merry-mi-mecha-pro-35k-black-mint.jpg.png" alt="MerryMi Mecha Pro 35K">
+                            </div>
+                            <div class="small-card-info">
+                                <h4>MerryMi Mecha Pro 35K Black Mint</h4>
+                                <p>MerryMi Mecha Pro jednorazówki</p>
+                            </div>
+                        </a>
+                        <!-- Card 2 -->
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow"
+                            class="product-card-small animate-on-scroll animate-fade-up delay-200">
+                            <div class="small-card-img-box">
+                                <img src="images/merry-mi-mecha-pro-35k-cactus-candy.jpg.png"
+                                    alt="MerryMi Mecha Pro 35K">
+                            </div>
+                            <div class="small-card-info">
+                                <h4>MerryMi Mecha Pro 35K Cactus Candy</h4>
+                                <p>MerryMi Mecha Pro jednorazówki</p>
+                            </div>
+                        </a>
+                        <!-- Card 3 -->
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow"
+                            class="product-card-small animate-on-scroll animate-fade-up delay-300">
+                            <div class="small-card-img-box">
+                                <img src="images/merry-mi-mecha-pro-35k-strawberry.jpg.png" alt="MerryMi Mecha Pro 35K">
+                            </div>
+                            <div class="small-card-info">
+                                <h4>MerryMi Mecha Pro 35K Prime Strawberry</h4>
+                                <p>MerryMi Mecha Pro jednorazówki</p>
+                            </div>
+                        </a>
+                        <!-- Card 4 -->
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow"
+                            class="product-card-small animate-on-scroll animate-fade-up delay-400">
+                            <div class="small-card-img-box">
+                                <img src="images/merry-mi-mecha-pro-16k-white-peach.jpg.png" alt="MerryMi Mecha 16K">
+                            </div>
+                            <div class="small-card-info">
+                                <h4>MerryMi Mecha 16K White Peach Berries</h4>
+                                <p>MerryMi Mecha jednorazówki</p>
+                            </div>
+                        </a>
+                        <!-- Card 5 -->
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow"
+                            class="product-card-small animate-on-scroll animate-fade-up delay-500">
+                            <div class="small-card-img-box">
+                                <img src="images/merry-mi-mecha-pro-16k-lime-soda.jpg.png" alt="MerryMi Mecha 16K">
+                            </div>
+                            <div class="small-card-info">
+                                <h4>MerryMi Mecha 16K Cranberry Lime Soda</h4>
+                                <p>MerryMi Mecha jednorazówki</p>
+                            </div>
+                        </a>
+                        <!-- Card 6 -->
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow"
+                            class="product-card-small animate-on-scroll animate-fade-up delay-600">
+                            <div class="small-card-img-box">
+                                <img src="images/merry-mi-mecha-pro-16k-lemon-mojito.jpg.png" alt="MerryMi Mecha 16K">
+                            </div>
+                            <div class="small-card-info">
+                                <h4>MerryMi Mecha 16K Sour Lemon Mojito</h4>
+                                <p>MerryMi Mecha jednorazówki</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- Features Grid -->
+                <section class="features">
+
+                    <!-- Card 1: 20000mAh -->
+                    <div class="card card-capacity">
+                        <div class="card-content">
+                            <h3 class="card-title">MerryMi Mecha</h3>
+                            <p class="card-value">16000<span class="unit">Buchów</span></p>
+                        </div>
+                        <div class="card-img-container">
+                            <!-- Slider Images -->
+                            <!-- Slide 1: 16K -->
+                            <img src="images/product-merrymi-mecha-16000.jpg.png" alt="16000Buchów"
+                                class="card-img slider-img active" data-title="MerryMi Mecha" data-value="16000">
+
+                            <!-- Slide 2: 35K -->
+                            <img src="images/product-merrymi-mecha-35000.jpg.png" alt="White Peach"
+                                class="card-img slider-img waiting" data-title="MerryMi Mecha Pro" data-value="35000">
+
+                        </div>
+                    </div>
+
+                    <!-- Column 2 Wrapper for Grid Layout -->
+                    <div class="col-2-wrapper">
+                        <!-- Card 2: 3-in-1 -->
+                        <div class="card card-charging">
+                            <div class="card-content-top">
+                                <h3 class="card-title">MerryMi Mecha Pro</h3>
+                                <p class="card-desc">35000Buchów</p>
+                            </div>
+                            <div class="card-img-container-small">
+                                <img src="images/merrymi-mecha-16k.jpg.png" alt="3-in-1 Fast Charging"
+                                    class="card-img-small">
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Airline -->
+                        <div class="card card-airline">
+                            <div class="airline-content">
+                                <span class="airline-text">Darmowa Dostawa</span>
+                                <span class="plane-icon">✈</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: 130W -->
+                    <div class="card card-output">
+                        <div class="card-content-center">
+                            <img src="images/mecha-result-16k.jpg.jpg" alt="3-in-1 Fast Charging"
+                                class="card-img-small">
+                            <div class="icon-">🌟🌟🌟🌟🌟</div>
+                            <p class="card-value-large"></p>
+                            <p class="card-desc">Po prostu radość dzielenia się tym smakiem! Cudowne chwile. 💖</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: 65W -->
+                    <div class="card card-recharging">
+                        <div class="card-content-center">
+                            <img src="images/merryMi-mecha-35k-result.jpg.jpg" alt="65W Fast Recharging"
+                                class="card-img-small">
+                            <div class="icon-">🌟🌟🌟🌟🌟</div>
+                            <p class="card-value-large"></p>
+                            <p class="card-desc">Zawsze mam go pod ręką na spotkaniach. Wyjątkowy smak.👍 </p>
+                        </div>
+
+                </section>
+
+            </div>
+    </main>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const slides = document.querySelectorAll('.card-capacity .slider-img');
+            // If no slides, exit
+            if (slides.length === 0) return;
+
+            let current = 0;
+            const intervalTime = 3000;
+            let slideInterval;
+
+            // Function to handle slide transition
+            const nextSlide = () => {
+                const next = (current + 1) % slides.length;
+
+                // Move current to exiting (Left)
+                slides[current].classList.remove('active');
+                slides[current].classList.remove('waiting');
+                slides[current].classList.add('exiting');
+
+                // Move next to active (Center)
+                // Ensure next is in waiting state first (Right)
+                slides[next].classList.remove('exiting');
+                slides[next].classList.add('waiting');
+
+                // Force a reflow to ensure the 'waiting' class applies (instant move to right)
+                // before we animate to active. 
+                void slides[next].offsetWidth;
+
+                slides[next].classList.remove('waiting');
+                slides[next].classList.add('active');
+
+                // Cleanup Old Slide: After transition/timeout, move exiting back to waiting (Right)
+                // We use a closure or just simple logic in next loop, but better to reset it.
+                // However, since we reset 'waiting' at the start of nextSlide for the *new* next,
+                // we strictly only need to make sure the 'exiting' one stays there until reused.
+                // But for cleanliness, let's reset it after animation.
+                const exitingSlide = slides[current];
+                setTimeout(() => {
+                    if (exitingSlide.classList.contains('exiting')) {
+                        exitingSlide.classList.remove('exiting');
+                        exitingSlide.classList.add('waiting');
+                    }
+                }, 800); // Match transition duration
+
+                current = next;
+            };
+
+            // Define Text Updaters
+            const titleEl = document.querySelector('.card-capacity .card-title');
+            const valueEl = document.querySelector('.card-capacity .card-value');
+
+            // Wrap the update logic to include text sync
+            const nextSlideWithText = () => {
+                const next = (current + 1) % slides.length;
+                const nextImg = slides[next];
+
+                // 1. Start Text Fade Out immediately
+                if (titleEl) titleEl.classList.add('fade-out');
+                if (valueEl) valueEl.classList.add('fade-out');
+
+                // 2. Perform Image Slide (Your existing logic)
+                slides[current].classList.remove('active');
+                slides[current].classList.remove('waiting');
+                slides[current].classList.add('exiting');
+
+                slides[next].classList.remove('exiting');
+                slides[next].classList.add('waiting');
+                void slides[next].offsetWidth; // force reflow
+                slides[next].classList.remove('waiting');
+                slides[next].classList.add('active');
+
+                // 3. Cleanup old slide (existing logic)
+                const exitingSlide = slides[current];
+                setTimeout(() => {
+                    if (exitingSlide.classList.contains('exiting')) {
+                        exitingSlide.classList.remove('exiting');
+                        exitingSlide.classList.add('waiting');
+                    }
+                }, 800);
+
+                // 4. Update Text EXACTLY when image arrives (at 800ms)
+                setTimeout(() => {
+                    // Get data from the NEW active image
+                    const newTitle = nextImg.getAttribute('data-title');
+                    const newValue = nextImg.getAttribute('data-value');
+
+                    // Update DOM content
+                    if (titleEl && newTitle) titleEl.textContent = newTitle;
+
+                    // For value, preserve the unit span
+                    if (valueEl && newValue) {
+                        // Assuming structure: "NUMBER<span...>"
+                        // We replace the text node separately or just innerHTML carefully
+                        // Simplest: Rebuild innerHTML to ensure structure
+                        valueEl.innerHTML = `${newValue}<span class="unit">Buchów</span>`;
+                    }
+
+                    // Fade text back in
+                    if (titleEl) titleEl.classList.remove('fade-out');
+                    if (valueEl) valueEl.classList.remove('fade-out');
+
+                }, 800); // Sync with CSS transition time (0.8s)
+
+                current = next;
+            };
+
+            // Start Auto Slide (switched function)
+            slideInterval = setInterval(nextSlideWithText, intervalTime);
+
+            // Pause on Hover
+            const capacityCard = document.querySelector('.card-capacity'); // Changed to whole card for better UX
+            if (capacityCard) {
+                capacityCard.addEventListener('mouseenter', () => {
+                    clearInterval(slideInterval);
+                });
+                capacityCard.addEventListener('mouseleave', () => {
+                    clearInterval(slideInterval);
+                    slideInterval = setInterval(nextSlideWithText, intervalTime);
+                });
+
+                // --- Parallax Effect ---
+                capacityCard.addEventListener('mousemove', (e) => {
+                    const rect = capacityCard.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+
+                    // Move images slightly opposite
+                    const images = capacityCard.querySelectorAll('.slider-img.active');
+                    images.forEach(img => {
+                        // We use inline styles for parallax but carefully not to override animation
+                        // But we have a conflict: CSS animation uses transform.
+                        // Best approach: Wrap image or just skip complex parallax if we use CSS keyframes transform.
+                        // Actually, we can just move the CONTAINER.
+                    });
+
+                    const imgContainer = capacityCard.querySelector('.card-img-container');
+                    if (imgContainer) {
+                        imgContainer.style.transform = `rotate(-20deg) translateX(${x * -0.05}px) translateY(${50 + y * -0.05}px)`;
+                        // Existing transform was: rotate(-20deg) translateX(px) translateY(50px)
+                        // Note: The original CSS had a typo: translateX(px) -> invalid. It was effectively 0.
+                    }
+                });
+
+                // Reset on leave
+                capacityCard.addEventListener('mouseleave', () => {
+                    const imgContainer = capacityCard.querySelector('.card-img-container');
+                    if (imgContainer) {
+                        imgContainer.style.transform = `rotate(-20deg) translateY(50px)`;
+                    }
+                });
+            }
+        });
+    </script>
+    <footer class="site-footer">
+        <div class="footer-container">
+
+            <div class="footer-column">
+                <h3>Produkty</h3>
+                <ul>
+                    <li><a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha 16K
+                            Jednorazówki</a></li>
+                    <li><a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro 35K
+                            Jednorazówki </a></li>
+                    <li><a href="http://dbucha.com/products/merrymi-mecha-pro-35k-buchow?variant=56958795317629">-
+                            Blueberry Cherry Cranberry 🫐🍒
+
+                        </a></li>
+                    <li><a href="http://dbucha.com/products/merrymi-mecha-pro-35k-buchow?variant=56958795317629">-
+                            Love66 💕🍉
+
+                        </a></li>
+                    <li><a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">– Blue Razz Ice 🔵❄️</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Strona Główn</h3>
+                <ul>
+                    <li><a href="https://www.dbucha.com/">O nas</a></li>
+                    <li><a href="https://www.dbucha.com/">Kontakt</a></li>
+                    <li><a href="https://www.dbucha.com/">Blog</a></li>
+                    <li><a href="https://www.dbucha.com/">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <div class="contact-item">
+                    <span class="icon">✉</span>
+                    <a href="mailto:info@dbucha.com">info@dbucha.com</a>
+                </div>
+                <div class="contact-item">
+                    <span class="icon">📞</span>
+                    <a href="tel:+48573581194">+48 573 581 194</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <hr>
+
+            <!-- Expandable Location Section -->
+            <div class="location-accordion">
+                <button class="accordion-header" id="accordion-toggle">
+                    MerryMi M-Mecha w Polsce <span class="arrow">▼</span>
+                </button>
+                <div class="accordion-content" id="accordion-content">
+                    <div class="city-list">
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Warszawie</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Szczecin</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Katowice</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Łódź</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Kraków</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Wrocław</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Poznań</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Gdańsk</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Bydgoszcz</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Lublin</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Białystok</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Gdynia</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Częstochowa</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Radom</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Sosnowiec</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Toruń</a>
+                        <a href="https://www.dbucha.com/products/merrymi-mecha-pro-35k-buchow">MerryMi M-Mecha Pro w
+                            Kielce</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w
+                            Gliwice</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w
+                            Zabrze</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w
+                            Olsztyn</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w
+                            Bielsko-Biała</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w
+                            Rzeszów</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w
+                            Rybnik</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w Tychy</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w Dąbrowa
+                            Górnicza</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w Płock</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w
+                            Elbląg</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w Opole</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w Gorzów
+                            Wielkopolski</a>
+                        <a href="https://www.dbucha.com/products/merrymi-m-mecha-16k-buchow">MerryMi M-Mecha w
+                            Wałbrzych</a>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <p class="copyright">© 2026 MerryMi M-Mecha jednorazówki.pl - Jednorazówki w Polsce.</p>
+        </div>
+    </footer>
+    <script>
+        // Footer Accordion Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggle = document.getElementById('accordion-toggle');
+            const content = document.getElementById('accordion-content');
+
+            if (toggle && content) {
+                toggle.addEventListener('click', () => {
+                    const isOpen = content.classList.contains('open');
+
+                    if (isOpen) {
+                        content.classList.remove('open');
+                        toggle.classList.remove('active');
+                        toggle.querySelector('.arrow').textContent = '▼';
+                    } else {
+                        content.classList.add('open');
+                        toggle.classList.add('active');
+                        toggle.querySelector('.arrow').textContent = '▲';
+
+                        // Dynamic height adjustment if needed, but CSS max-height handles visual slide
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
