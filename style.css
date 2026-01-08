@@ -584,6 +584,7 @@ body {
 }
 
 .product-card-small {
+    text-decoration: none;
     /* bg transparent? or very transparent white */
     display: flex;
     flex-direction: column;
@@ -647,6 +648,7 @@ body {
     font-size: 12px;
     color: #05923b;
     opacity: 0.85;
+    text-decoration: none;
 }
 
 @media screen and (max-width: 480px) {
@@ -1021,4 +1023,23 @@ span.menu-icon,
     font-weight: bold;
     width: 100%;
     text-transform: uppercase;
+}
+
+.product-card-small {
+    text-decoration: none !important;
+}
+
+.product-card-small h4,
+.product-card-small p {
+    text-decoration: none !important;
+}
+
+/* This removes the underline from the links in your card */
+.small-card-info a {
+    text-decoration: none;
+}
+
+/* Or, to be safe, remove it from all links in your project */
+a {
+    text-decoration: none;
 }
