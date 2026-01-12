@@ -1130,6 +1130,18 @@ a {
 }
 
 .buy-now-btn {
+    display: block;
+    /* Դարձնում է բլոկային տարր */
+    width: 100%;
+    /* Ձգում է ամբողջ տողով */
+    padding: 12px 0;
+    /* Մեծացնում է բարձրությունը */
+    font-size: 18px;
+    /* Մեծացնում է տառաչափը */
+    text-align: center;
+    /* Տեքստը դնում է կենտրոնում */
+    box-sizing: border-box;
+    /* Որպեսզի width-ը ճիշտ հաշվարկվի */
     /* Քո ունեցած սթայլերին ավելացրու այս տողը՝ անընդհատ շարժի համար */
     animation: button-glow 2s infinite;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
