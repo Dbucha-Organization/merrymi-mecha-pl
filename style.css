@@ -1043,3 +1043,110 @@ span.menu-icon,
 a {
     text-decoration: none;
 }
+
+/* Նկարի կոնտեյները դարձնում ենք հիմք */
+.small-card-img-box {
+    position: relative;
+    overflow: hidden;
+    /* Որպեսզի ավելորդ մասերը չերևան */
+}
+
+/* Տեղավորում ենք տեքստն ու կոճակը նկարի վրա */
+/* Տեղավորում ենք տեքստն ու կոճակը նկարի վրա */
+/* .image-overlay-info removed */
+
+/* .puffs-count removed */
+
+.buy-now-btn {
+    background-color: #39ff14;
+    /* Neon green matching accent */
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    margin-top: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    align-self: flex-start;
+    /* Align left if flex column */
+}
+
+.buy-now-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(57, 255, 20, 0.4);
+}
+
+.footer-home-link {
+    text-decoration: none;
+    /* Հեռացնում է տակի գիծը */
+    color: inherit;
+    /* Վերցնում է ծնող թեգի (h3) գույնը */
+    cursor: pointer;
+    /* Ցույց է տալիս, որ սեղմվող է */
+}
+
+.footer-home-link:hover,
+.footer-home-link:active,
+.footer-home-link:visited {
+    text-decoration: none;
+    /* Ոչ մի պարագայում գիծ չի հայտնվի */
+    color: inherit;
+    /* Գույնը չի փոխվի անգամ սեղմելուց հետո */
+}
+
+/* Սա վերաբերում է միայն այս հղմանը */
+.clean-link {
+    text-decoration: none !important;
+    /* Վերացնում է տակի գիծը */
+    color: inherit !important;
+    /* Վերցնում է h3-ի բնական գույնը */
+    outline: none;
+    /* Վերացնում է սեղմելուց հայտնվող շրջանակը */
+}
+
+.clean-link:hover,
+.clean-link:visited,
+.clean-link:active {
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+/* 1. Ավելացնում ենք շարժվող փայլի էֆեկտ (Pulse) */
+@keyframes button-glow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(57, 255, 20, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(57, 255, 20, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(57, 255, 20, 0);
+    }
+}
+
+.buy-now-btn {
+    /* Քո ունեցած սթայլերին ավելացրու այս տողը՝ անընդհատ շարժի համար */
+    animation: button-glow 2s infinite;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+/* 2. Փոխում ենք Hover-ը, որ ավելի կենդանի լինի */
+.buy-now-btn:hover {
+    transform: scale(1.1) translateY(-3px) !important;
+    /* Մեծանում է ու բարձրանում */
+    background-color: #ffffff !important;
+    /* Գույնը դառնում է սպիտակ */
+    color: #000 !important;
+    box-shadow: 0 8px 20px rgba(57, 255, 20, 0.6) !important;
+}
+
+/* 3. Սեղմելու պահին (Active) */
+.buy-now-btn:active {
+    transform: scale(0.95);
+    /* Մի փոքր սեղմվում է */
+}
