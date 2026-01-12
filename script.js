@@ -4,8 +4,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileLinks = document.querySelectorAll('.mobile-link');
 
     hamburger.addEventListener('click', () => {
-        hamburger.classList.toggle('active'); // Use active for animation
+        hamburger.classList.toggle('active');
         mobileMenu.classList.toggle('active');
+
+        // Ավելացրու այս պայմանը սքրոլը անջատելու համար
+        if (mobileMenu.classList.contains('active')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'auto';
+        }
     });
 
     // Close menu when clicking a link
